@@ -1,0 +1,11 @@
+def wait_for_input():
+    input("{0:-^80}\n".format("HIT CR TO UNSUBSCRIBE AND DISCONNECT"))
+
+majors = [
+    "CS.D.EURUSD.MINI.IP:1MINUTE",
+    "CS.D.USDJPY.MINI.IP:1MINUTE",
+    "CS.D.GBPUSD.MINI.IP:1MINUTE",
+    "CS.D.AUDUSD.MINI.IP:1MINUTE",
+    "CS.D.USDCAD.MINI.IP:1MINUTE",
+    "CS.D.NZDUSD.MINI.IP:1MINUTE"
+]
