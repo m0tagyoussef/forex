@@ -30,6 +30,7 @@ con = sqlite3.connect("database.db", timeout=30, isolation_level=None)
 crsr = con.cursor()
 
 crsr.execute("""CREATE TABLE IF NOT EXISTS data(
+                id PK,
                 datetime INTEGR NOT NULL,
                 pair TEXT NOT NULL,
                 open REAL,
@@ -37,8 +38,9 @@ crsr.execute("""CREATE TABLE IF NOT EXISTS data(
                 high REAL,
                 close REAL,
                 volume REAL,
-                end BLOB,
-                tyoe TEXT
+                c_end BLOB,
+                p_type TEXT,
+                pushed BLOB
              )       
             """)
 crsr.execute("CREATE INDEX IF NOT EXISTS index_datetime ON data(datetime DESC)")
@@ -129,11 +131,32 @@ class MarketListener(SubscriptionListener):
         con.execute('pragma journal_mode=wal')
         crsr = con.cursor()
 
-        crsr.execute("INSERT INTO data VALUES (?,?,?,?,?,?,?,?,?) ", 
-                     (update.getValue('UTM'),update.getItemName(), update.getValue('OFR_OPEN'), update.getValue('OFR_LOW'), update.getValue('OFR_HIGH'), update.getValue('OFR_CLOSE'), update.getValue('LTV'), update.getValue('CONS_END'), "offer"))
+        crsr.execute("INSERT INTO data VALUES (?,?,?,?,?,?,?,?,?,?,?) ", 
+            (str(update.getItemName()).split(".")[2] + str(update.getValue('UTM')) + "O",
+            update.getValue('UTM'),
+            str(update.getItemName()).split(".")[2],
+            update.getValue('OFR_OPEN'),
+            update.getValue('OFR_LOW'),
+            update.getValue('OFR_HIGH'),
+            update.getValue('OFR_CLOSE'),
+            update.getValue('LTV'),
+            update.getValue('CONS_END'),
+            "offer",
+             0))
         
-        crsr.execute("INSERT INTO data VALUES (?,?,?,?,?,?,?,?,?) ", 
-                (update.getValue('UTM'),update.getItemName(), update.getValue('BID_OPEN'), update.getValue('BID_LOW'), update.getValue('BID_HIGH'), update.getValue('BID_CLOSE'), update.getValue('LTV'), update.getValue('CONS_END'), "bid"))
+        crsr.execute("INSERT INTO data VALUES (?,?,?,?,?,?,?,?,?,?,?) ", 
+            (str(update.getItemName()).split(".")[2] + str(update.getValue('UTM')) + "B",
+            update.getValue('UTM'),
+            str(update.getItemName()).split(".")[2],
+            update.getValue('BID_OPEN'),
+            update.getValue('BID_LOW'),
+            update.getValue('BID_HIGH'),
+            update.getValue('BID_CLOSE'),
+            update.getValue('LTV'),
+            update.getValue('CONS_END'),
+            "bid",
+             0))
+        
         con.commit()
 
     def onSubscription(self):
